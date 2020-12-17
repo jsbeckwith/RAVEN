@@ -2,6 +2,7 @@ import os
 import glob
 import numpy as np
 from scipy import misc
+from PIL import Image
 
 import torch
 from torch.utils.data import Dataset, DataLoader
@@ -111,8 +112,6 @@ class RAVENdataset(Dataset):
                 context = context[self.switch, :, :]
             image = np.concatenate((context, new_choices))
             target = new_target
-
-        print("target", target)
 
         resize_image_arr = []
         for idx in range(0, 16):
