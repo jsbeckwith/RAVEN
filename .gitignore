@@ -108,3 +108,5 @@ venv.bak/
 
 # experiments
 /experiments
+
+.DS_Store
