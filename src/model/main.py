@@ -81,7 +81,7 @@ def train(epoch):
     #for batch_idx, (image, target, meta_target, meta_structure, embedding, indicator) in enumerate(trainloader):
         counter += 1
         if args.cuda:
-            image = image.cuda()
+            image = image.to('cuda', dtype=torch.float32)
             target = target.cuda()
             meta_target = meta_target.cuda()
             #meta_structure = meta_structure.cuda()
@@ -107,7 +107,7 @@ def validate(epoch):
     #for batch_idx, (image, target, meta_target, meta_structure, embedding, indicator) in enumerate(validloader):
         counter += 1
         if args.cuda:
-            image = image.cuda()
+            image = image.to('cuda', dtype=torch.float32)
             target = target.cuda()
             meta_target = meta_target.cuda()
             #meta_structure = meta_structure.cuda()
@@ -132,7 +132,7 @@ def test(epoch):
     # for batch_idx, (image, target, meta_target, meta_structure, embedding, indicator) in enumerate(testloader):
         counter += 1
         if args.cuda:
-            image = image.cuda()
+            image = image.to('cuda', dtype=torch.float32)
             target = target.cuda()
             meta_target = meta_target.cuda()
             # meta_structure = meta_structure.cuda()
