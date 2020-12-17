@@ -41,9 +41,16 @@ if args.cuda:
 if not os.path.exists(args.save):
     os.makedirs(args.save)
 
-train = RAVENdataset(args.path, "train", args.img_size, transform=transforms.Compose([ToTensor()]))
+""" train = RAVENdataset(args.path, "train", args.img_size, transform=transforms.Compose([ToTensor()]))
 valid = RAVENdataset(args.path, "val", args.img_size, transform=transforms.Compose([ToTensor()]))
-test = RAVENdataset(args.path, "test", args.img_size, transform=transforms.Compose([ToTensor()]))
+test = RAVENdataset(args.path, "test", args.img_size, transform=transforms.Compose([ToTensor()])) """
+
+args.train_figure_configurations = [0,1,2,3,4,5,6]
+args.val_figure_configurations = args.train_figure_configurations
+args.test_figure_configurations = [0,1,2,3,4,5,6]
+train = RAVENdataset(args.path, "train", args.train_figure_configurations, args.img_size, transform=transforms.Compose([ToTensor()]), shuffle = True)
+valid = RAVENdataset(args.path, "val", args.val_figure_configurations, args.img_size, transform=transforms.Compose([ToTensor()]))
+test = RAVENdataset(args.path, "test", args.test_figure_configurations, args.img_size, transform=transforms.Compose([ToTensor()]))
 
 trainloader = DataLoader(train, batch_size=args.batch_size, shuffle=True, num_workers=16)
 validloader = DataLoader(valid, batch_size=args.batch_size, shuffle=False, num_workers=16)
