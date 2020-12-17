@@ -14,13 +14,13 @@ class BasicModel(nn.Module):
     def save_model(self, path, epoch, acc, loss):
         torch.save({'state_dict': self.state_dict(), 'acc': acc, 'loss': loss}, path+'{}_epoch_{}.pth'.format(self.name, epoch))
 
-    def compute_loss(self, output, target, meta_target):
+    def compute_loss(self, output, target, meta_target, meta_structure):
         pass
 
-    def train_(self, image, target, meta_target):
+    def train_(self, image, target, meta_target, meta_structure, embedding, indicator):
         self.optimizer.zero_grad()
-        output = self(image)
-        loss = self.compute_loss(output, target, meta_target)
+        output = self(image, embedding, indicator)
+        loss = self.compute_loss(output, target, meta_target, meta_structure)
         loss.backward()
         self.optimizer.step()
         pred = output[0].data.max(1)[1]
@@ -28,18 +28,18 @@ class BasicModel(nn.Module):
         accuracy = correct * 100.0 / target.size()[0]
         return loss.item(), accuracy
 
-    def validate_(self, image, target, meta_target):
+    def validate_(self, image, target, meta_target, meta_structure, embedding, indicator):
         with torch.no_grad():
-            output = self(image)
-        loss = self.compute_loss(output, target, meta_target)
+            output = self(image, embedding, indicator)
+        loss = self.compute_loss(output, target, meta_target, meta_structure)
         pred = output[0].data.max(1)[1]
         correct = pred.eq(target.data).cpu().sum().numpy()
         accuracy = correct * 100.0 / target.size()[0]
         return loss.item(), accuracy
 
-    def test_(self, image, target, meta_target):
+    def test_(self, image, target, meta_target, meta_structure, embedding, indicator):
         with torch.no_grad():
-            output = self(image)
+            output = self(image, embedding, indicator)
         pred = output[0].data.max(1)[1]
         correct = pred.eq(target.data).cpu().sum().numpy()
         accuracy = correct * 100.0 / target.size()[0]
