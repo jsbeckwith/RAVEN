@@ -8,7 +8,7 @@ import torch.optim as optim
 from torch.utils.data import Dataset, DataLoader
 from torchvision import transforms, utils
 
-from utility import dataset, ToTensor
+from utility import RAVENdataset, dataset, ToTensor
 from cnn_mlp import CNN_MLP
 from cnn_lstm import CNN_LSTM
 from resnet18 import Resnet18_MLP
@@ -41,9 +41,9 @@ if args.cuda:
 if not os.path.exists(args.save):
     os.makedirs(args.save)
 
-train = dataset(args.path, "train", args.img_size, transform=transforms.Compose([ToTensor()]))
-valid = dataset(args.path, "val", args.img_size, transform=transforms.Compose([ToTensor()]))
-test = dataset(args.path, "test", args.img_size, transform=transforms.Compose([ToTensor()]))
+train = RAVENdataset(args.path, "train", args.img_size, transform=transforms.Compose([ToTensor()]))
+valid = RAVENdataset(args.path, "val", args.img_size, transform=transforms.Compose([ToTensor()]))
+test = RAVENdataset(args.path, "test", args.img_size, transform=transforms.Compose([ToTensor()]))
 
 trainloader = DataLoader(train, batch_size=args.batch_size, shuffle=True, num_workers=16)
 validloader = DataLoader(valid, batch_size=args.batch_size, shuffle=False, num_workers=16)
@@ -70,16 +70,18 @@ def train(epoch):
     loss_all = 0.0
     acc_all = 0.0
     counter = 0
-    for batch_idx, (image, target, meta_target, meta_structure, embedding, indicator) in enumerate(trainloader):
+    for batch_idx, (image, target, meta_target) in enumerate(trainloader):
+    #for batch_idx, (image, target, meta_target, meta_structure, embedding, indicator) in enumerate(trainloader):
         counter += 1
         if args.cuda:
             image = image.cuda()
             target = target.cuda()
             meta_target = meta_target.cuda()
-            meta_structure = meta_structure.cuda()
-            embedding = embedding.cuda()
-            indicator = indicator.cuda()
-        loss, acc = model.train_(image, target, meta_target, meta_structure, embedding, indicator)
+            #meta_structure = meta_structure.cuda()
+            #embedding = embedding.cuda()
+            #indicator = indicator.cuda()
+        loss, acc = model.train_(image, target, meta_target)
+        #loss, acc = model.train_(image, target, meta_target, meta_structure, embedding, indicator)
         print('Train: Epoch:{}, Batch:{}, Loss:{:.6f}, Acc:{:.4f}.'.format(epoch, batch_idx, loss, acc))
         loss_all += loss
         acc_all += acc
@@ -94,16 +96,18 @@ def validate(epoch):
     loss_all = 0.0
     acc_all = 0.0
     counter = 0
-    for batch_idx, (image, target, meta_target, meta_structure, embedding, indicator) in enumerate(validloader):
+    for batch_idx, (image, target, meta_target) in enumerate(validloader):
+    #for batch_idx, (image, target, meta_target, meta_structure, embedding, indicator) in enumerate(validloader):
         counter += 1
         if args.cuda:
             image = image.cuda()
             target = target.cuda()
             meta_target = meta_target.cuda()
-            meta_structure = meta_structure.cuda()
-            embedding = embedding.cuda()
-            indicator = indicator.cuda()
-        loss, acc = model.validate_(image, target, meta_target, meta_structure, embedding, indicator)
+            #meta_structure = meta_structure.cuda()
+            #embedding = embedding.cuda()
+            #indicator = indicator.cuda()
+        loss, acc = model.validate_(image, target, meta_target)
+        # loss, acc = model.validate_(image, target, meta_target, meta_structure, embedding, indicator)
         # print('Validate: Epoch:{}, Batch:{}, Loss:{:.6f}, Acc:{:.4f}.'.format(epoch, batch_idx, loss, acc)) 
         loss_all += loss
         acc_all += acc
@@ -117,16 +121,18 @@ def test(epoch):
 
     acc_all = 0.0
     counter = 0
-    for batch_idx, (image, target, meta_target, meta_structure, embedding, indicator) in enumerate(testloader):
+    for batch_idx, (image, target, meta_target) in enumerate(testloader):
+    # for batch_idx, (image, target, meta_target, meta_structure, embedding, indicator) in enumerate(testloader):
         counter += 1
         if args.cuda:
             image = image.cuda()
             target = target.cuda()
             meta_target = meta_target.cuda()
-            meta_structure = meta_structure.cuda()
-            embedding = embedding.cuda()
-            indicator = indicator.cuda()
-        acc = model.test_(image, target, meta_target, meta_structure, embedding, indicator)
+            # meta_structure = meta_structure.cuda()
+            # embedding = embedding.cuda()
+            # indicator = indicator.cuda()
+        acc = model.test_(image, target, meta_target)
+        # acc = model.test_(image, target, meta_target, meta_structure, embedding, indicator)
         # print('Test: Epoch:{}, Batch:{}, Acc:{:.4f}.'.format(epoch, batch_idx, acc))  
         acc_all += acc
     if counter > 0:

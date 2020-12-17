@@ -42,8 +42,8 @@ class Resnet18_MLP(BasicModel):
         self.meta_alpha = args.meta_alpha
         self.meta_beta = args.meta_beta
 
-    def compute_loss(self, output, target, meta_target, meta_structure):
-        pred, meta_target_pred, meta_struct_pred = output[0], output[1], output[2]
+    def compute_loss(self, output, target, meta_target):
+        pred, meta_target_pred, = output[0], output[1]
 
         target_loss = F.cross_entropy(pred, target)
         meta_target_pred = torch.chunk(meta_target_pred, chunks=9, dim=1)
@@ -52,23 +52,17 @@ class Resnet18_MLP(BasicModel):
         for idx in range(0, 9):
             meta_target_loss += F.binary_cross_entropy(F.sigmoid(meta_target_pred[idx]), meta_target[idx])
 
-        meta_struct_pred = torch.chunk(meta_struct_pred, chunks=21, dim=1)
-        meta_structure = torch.chunk(meta_structure, chunks=21, dim=1)
-        meta_struct_loss = 0.
-        for idx in range(0, 21):
-            meta_struct_loss += F.binary_cross_entropy(F.sigmoid(meta_struct_pred[idx]), meta_structure[idx])
-        loss = target_loss + self.meta_alpha*meta_struct_loss/21. + self.meta_beta*meta_target_loss/9.
+        loss = target_loss + self.meta_beta*meta_target_loss/9.
         return loss
 
-    def forward(self, x, embedding, indicator):
+    def forward(self, x):
         alpha = 1.0
         features = self.resnet18(x.view(-1, 16, 224, 224))
         features_tree = features.view(-1, 1, 512)
-        features_tree = self.fc_tree_net(features_tree, embedding, indicator)
+        features_tree = self.fc_tree_net(features_tree)
         final_features = features + alpha * features_tree
         output = self.mlp(final_features)
         pred = output[:,0:8]
         meta_target_pred = output[:,8:17]
-        meta_struct_pred = output[:,17:38]
-        return pred, meta_target_pred, meta_struct_pred
+        return pred, meta_target_pred
     
