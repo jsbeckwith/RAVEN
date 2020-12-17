@@ -24,7 +24,7 @@ class dataset(Dataset):
             tmp = [f for f in glob.glob(os.path.join(root_dir, figure_configuration_names[idx], "*.npz")) if dataset_type in os.path.basename(f)]
             self.file_names += tmp
         self.img_size = img_size
-        self.embeddings = np.load(os.path.join(root_dir, 'embedding.npy'), allow_pickle=True)
+        self.embeddings = np.load(os.path.join(root_dir, 'embedding.npy'), allow_pickle=True, encoding='ASCII')
         self.shuffle = shuffle
         self.switch = [3,4,5,0,1,2,6,7]
 
