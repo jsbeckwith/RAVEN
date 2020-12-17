@@ -128,8 +128,6 @@ class RAVENdataset(Dataset):
         if self.transform:
             resize_image_arr = self.transform(resize_image_arr)
             target = torch.tensor(target, dtype=torch.long)
-            print("target", type(target))
-            #target = self.transform(target)
             meta_target = self.transform(meta_target) 
 
         return resize_image_arr, target, meta_target
