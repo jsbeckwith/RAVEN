@@ -8,7 +8,7 @@ import torch.optim as optim
 from torch.utils.data import Dataset, DataLoader
 from torchvision import transforms, utils
 
-from utility import PGMdataset, RAVENdataset, ToTensor
+from utility import dataset, ToTensor
 from resnet18 import Resnet18_MLP
 
 parser = argparse.ArgumentParser(description='our_model')
