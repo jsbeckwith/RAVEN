@@ -14,7 +14,7 @@ from resnet18 import Resnet18_MLP
 parser = argparse.ArgumentParser(description='our_model')
 parser.add_argument('--model', type=str, default='Resnet18_MLP')
 parser.add_argument('--epochs', type=int, default=200)
-parser.add_argument('--batch_size', type=int, default=32)
+parser.add_argument('--batch_size', type=int, default=5)
 parser.add_argument('--seed', type=int, default=12345)
 parser.add_argument('--device', type=int, default=0)
 parser.add_argument('--load_workers', type=int, default=16)
