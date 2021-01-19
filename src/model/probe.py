@@ -30,7 +30,11 @@ parser.add_argument('--meta_alpha', type=float, default=0.0)
 parser.add_argument('--meta_beta', type=float, default=0.0)
 
 args = parser.parse_args()
-torch.cuda.manual_seed(args.seed)
+args.cuda = torch.cuda.is_available()
+torch.cuda.set_device(args.device)
+if args.cuda:
+    torch.cuda.manual_seed(args.seed)
+
 args.test_figure_configurations = [0,1,2,3,4,5,6]
 testds = dataset(args.path, "test", args.img_size, transform=transforms.Compose([ToTensor()]))
 testloader = DataLoader(testds, batch_size=args.batch_size, shuffle=False, num_workers=16)
