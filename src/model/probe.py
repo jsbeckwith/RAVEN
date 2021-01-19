@@ -45,24 +45,26 @@ if args.resume:
 if args.cuda:
     model = model.cuda()
 
-def test():
+def test(epoch):
     model.eval()
     accuracy = 0
     acc_all = 0.0
     counter = 0
-    with torch.no_grad():
-        for batch_idx, (image, target, meta_target) in enumerate(testloader):
-            counter += 1
-            if args.cuda:
-                image = image.cuda()
-                target = target.cuda()
-                meta_target = meta_target.cuda()   
-            output = model(image)
-            pred = output[0].data.max(1)[1]
-            correct = pred.eq(target.data).cpu().sum().numpy()
-            accuracy = correct * 100. / target.size()[0]   
-            acc = accuracy
-            acc_all += acc
+    for batch_idx, (image, target, meta_target, meta_structure, embedding, indicator) in enumerate(testloader):
+        counter += 1
+        if args.cuda:
+            image = image.cuda()
+            target = target.cuda()
+            meta_target = meta_target.cuda()
+            meta_structure = meta_structure.cuda()
+            embedding = embedding.cuda()
+            indicator = indicator.cuda()
+        acc = model.test_(image, target, meta_target, meta_structure, embedding, indicator)
+        # print('Test: Epoch:{}, Batch:{}, Acc:{:.4f}.'.format(epoch, batch_idx, acc))  
+        acc_all += acc
+        if batch_idx % 100 == 0:
+                print("interim accuracy, batch", batch_idx, ":")
+                print((acc_all / float(counter)))
     if counter > 0:
         print("Total Testing Acc: {:.4f}".format(acc_all / float(counter)))
     return acc_all/float(counter)
