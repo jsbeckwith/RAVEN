@@ -45,7 +45,7 @@ if args.resume:
 if args.cuda:
     model = model.cuda()
 
-def test(epoch):
+def test():
     model.eval()
     accuracy = 0
     acc_all = 0.0
